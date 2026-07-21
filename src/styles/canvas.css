@@ -1,0 +1,21 @@
+.graph-network { touch-action: none; user-select: none; cursor: grab; }
+.graph-network.panning { cursor: grabbing; }
+.graph-network svg { z-index: 0; pointer-events: none; }
+.canvas-tools { display: flex; align-items: center; gap: 8px; }
+.canvas-tools > button { height: 30px; border: 1px solid #ddd; border-radius: 6px; background: #fff; padding: 0 9px; font: 8px Inter; cursor: pointer; }
+.tool-tip { font: 7px DM Mono; color: #888; }
+.canvas-node { cursor: grab; }
+.canvas-node.dragging { cursor: grabbing !important; transition: none !important; box-shadow: 0 14px 30px rgba(0,0,0,.14); z-index: 6; }
+.node-ports { position: absolute; right: -31px; top: 50%; transform: translateY(-50%); display: grid; gap: 7px; }
+.node-ports.single { top: 62%; }
+.connector { position: relative; width: 29px; height: 16px; border: 2px solid white; border-radius: 8px; background: #111; color: white; box-shadow: 0 0 0 1px #111; cursor: crosshair; z-index: 7; display: grid; place-items: center; font: 500 6px DM Mono; transition: .15s; }
+.connector:hover { transform: scale(1.12); }
+.service-port { background: white; color: #111; }
+.graph-network svg .preview-line { stroke: #111; stroke-width: 1.5; stroke-dasharray: 3 4; }
+.graph-network svg .user-line { stroke-width: 1.5; pointer-events: stroke; cursor: pointer; }
+.graph-network svg .user-line.selected { stroke-width: 4; stroke-dasharray: none; }
+.remove-connection { color: #999; }
+.remove-connection:not(:disabled) { color: #111; border-color: #111; }
+.remove-connection:disabled { opacity: .45; cursor: default; }
+.personal-root.dragging, .attached-node.dragging { transform: translate(-50%,-50%) scale(1.02); }
+@media (max-width: 900px) { .tool-tip { display: none; } }

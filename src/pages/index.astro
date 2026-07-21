@@ -1,0 +1,220 @@
+---
+import '../styles/global.css';
+import '../styles/graph.css';
+import '../styles/canvas.css';
+import '../styles/inspector.css';
+import '../styles/apps.css';
+import '../styles/floating-apps.css';
+import '../styles/workflows.css';
+import '../styles/app-field.css';
+import '../styles/personal-space.css';
+
+const sources = [
+  { icon: 'N', name: 'Notion', meta: '1,248 pages' },
+  { icon: 'O', name: 'Obsidian', meta: '892 notes' },
+  { icon: 'D', name: 'Drive', meta: '314 files' }
+];
+const knowledge = [
+  { id: 'product-strategy', title: 'Product strategy', type: 'Notion', updated: '2m ago', status: 'Synced', summary: 'The current strategy centers on turning scattered personal knowledge into small, repeatable workflows.', tags: ['Strategy', 'Product'], words: '1,842 words' },
+  { id: 'customer-interviews', title: 'Customer interview notes', type: 'Obsidian', updated: '18m ago', status: 'Synced', summary: 'Customers want faster retrieval, clearer citations, and confidence that connected sources remain private.', tags: ['Research', 'Customers'], words: '3,104 words' },
+  { id: 'market-research', title: 'Q3 market research', type: 'Drive', updated: '1h ago', status: 'Reading', summary: 'A working market scan covering personal knowledge tools, autonomous agents, and local-first infrastructure.', tags: ['Market', 'Research'], words: '5,620 words' },
+  { id: 'launch-retro', title: 'Launch retrospective', type: 'Notion', updated: 'Yesterday', status: 'Synced', summary: 'The launch generated strong curiosity, but onboarding needs to demonstrate value before exposing infrastructure details.', tags: ['Launch', 'Retrospective'], words: '956 words' }
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="A live peer-to-peer knowledge workspace" />
+    <title>Loom — Personal intelligence</title>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#live" data-view-link="live"><span class="logo">L</span><b>Loom</b></a>
+      <nav aria-label="Workspace navigation">
+        <a class="nav active" href="#live" data-view-link="live"><span>⌁</span><b>Live map</b></a>
+        <a class="nav" href="#knowledge" data-view-link="knowledge"><span>□</span><b>Knowledge</b><i>2.4k</i></a>
+        <a class="nav" href="#agents" data-view-link="agents"><span>◇</span><b>Agents</b><i>3</i></a>
+        <a class="nav" href="#connections" data-view-link="connections"><span>↗</span><b>Connections</b></a>
+      </nav>
+      <div class="side-foot">
+        <button class="help">? <span>Help</span></button>
+        <button class="account"><span>AP</span><div><b>Anish’s space</b><small>Personal</small></div></button>
+      </div>
+    </aside>
+
+    <main>
+      <section class="view active" data-view="live">
+        <header>
+          <div><span class="kicker">LIVE WORKSPACE</span><h1>Your knowledge,<br/><em>connected.</em></h1><p>Watch your sources and agents work together in real time.</p></div>
+          <button class="black-button" id="askButton">Ask your brain <span>↗</span></button>
+        </header>
+        <div class="health"><span><i></i> All systems connected</span><span>3 agents · 4 sources · 12 tasks today</span></div>
+
+        <article class="map-panel">
+          <div class="panel-bar"><div><b>Network playground</b><span>Live</span></div><div class="canvas-tools"><span class="tool-tip">Drag from a labeled port to connect</span><button id="removeConnection" class="remove-connection" disabled>× Remove line</button><button id="fitCanvas" title="Reset node positions">⌗ Fit</button><div class="server-search"><span>⌕</span><input id="serverSearch" placeholder="Search server ID" autocomplete="off"/><div id="searchResults" class="search-results"></div></div></div></div>
+          <div class="network graph-network" id="network">
+            <svg viewBox="0 0 1000 440" preserveAspectRatio="none" id="connectionSvg" aria-hidden="true"></svg>
+            <div class="graph-key"><span><i class="personal-key"></i> Personal node</span><span><i class="service-key"></i> Service node</span><span><b></b> WebSocket</span></div>
+            <div class="personal-root canvas-node" id="brain" data-node-id="personal-ANISH-001" data-node-type="personal"><span class="personal-space-label">ANISH’S PERSONAL SPACE</span><span class="node-type">PERSONAL NODE</span><i class="personal-mark">P</i><b>Anish’s Brain</b><small>personal-ANISH-001</small><em><i></i> Online</em><div class="personal-app-field"><span>CONNECTED APPS</span><div id="personalApps"></div><button class="connect-apps-trigger" id="connectApps" aria-label="Connect apps"><i>＋</i><span>Connect apps</span></button></div><span class="node-ports"><span class="port websocket-port connector" data-port="websocket">WS</span><span class="port service-port connector" data-port="service">SVC</span></span></div>
+            <div id="attachedNodes"></div>
+            <div class="empty-graph" id="emptyGraph"><span>＋</span><b>Attach your first node</b><small>Search a unique ID above to grow this network.</small></div>
+            <button class="line-quick-remove" id="lineQuickRemove">× Disconnect</button>
+            <div class="app-picker" id="appPicker">
+              <div class="app-picker-head"><div><span>APP DIRECTORY</span><b>Connect an app</b></div><button id="closeAppPicker">×</button></div>
+              <p>Give your personal node access to the tools you already use.</p>
+              <div class="app-grid" id="appGrid"></div>
+              <small>Apps connect through a dedicated Service port.</small>
+            </div>
+          </div>
+        </article>
+        <div class="lower-grid">
+          <article class="activity"><div class="section-title"><div><h2>Activity</h2><p>What your workspace is doing.</p></div><button>View all</button></div><div id="activityList"><div class="activity-row"><span>01</span><p><b>Researcher</b> found 6 sources for “Q3 market overview”<small>Just now</small></p></div><div class="activity-row"><span>02</span><p><b>Notion</b> shared a new product brief<small>2 minutes ago</small></p></div><div class="activity-row"><span>03</span><p><b>Writer</b> created a first draft<small>8 minutes ago</small></p></div></div></article>
+          <article class="ask-card" id="askCard"><span class="kicker">ASK YOUR BRAIN</span><h2>What would you like to know?</h2><form id="askForm"><input id="askInput" placeholder="Type a question…"/><button aria-label="Send">↗</button></form><div class="chips"><button>Summarize my week</button><button>Find an idea</button></div></article>
+        </div>
+      </section>
+
+      <section class="view" data-view="knowledge">
+        <header><div><span class="kicker">KNOWLEDGE</span><h1>Everything you<br/><em>know.</em></h1><p>Search and browse every connected source in one place.</p></div><button class="black-button" id="addSourceButton">Add source +</button></header>
+        <div class="knowledge-tools">
+          <label class="search-large" for="knowledgeSearch">⌕ <input id="knowledgeSearch" placeholder="Search documents, sources, or topics…" autocomplete="off"/></label>
+          <div class="filter-bar" id="sourceFilters" aria-label="Filter by source"><button class="selected" data-source="all">All</button><button data-source="Notion">Notion</button><button data-source="Obsidian">Obsidian</button><button data-source="Drive">Drive</button></div>
+        </div>
+        <div class="result-summary"><span id="knowledgeResultCount">4 documents</span><button id="askResultsButton">Ask about these results ↗</button></div>
+        <article class="table-panel" id="knowledgeTable"><div class="table-head"><span>Name</span><span>Source</span><span>Updated</span><span>Status</span></div>{knowledge.map(item => <button class="table-row" data-document={JSON.stringify(item)} data-source={item.type} data-search={`${item.title} ${item.type} ${item.summary} ${item.tags.join(' ')}`.toLowerCase()}><span><i>□</i><b>{item.title}</b></span><span>{item.type}</span><span>{item.updated}</span><span class="status">{item.status}</span></button>)}<div class="table-empty" id="knowledgeEmpty"><b>No documents found</b><span>Try a broader search or another source.</span></div></article>
+      </section>
+
+      <section class="view" data-view="agents">
+        <header><div><span class="kicker">AGENTS</span><h1>Your digital<br/><em>team.</em></h1><p>Give focused agents a goal, context, and a clear deliverable.</p></div><button class="black-button" id="createAgentButton">Create agent +</button></header>
+        <div class="agent-overview"><span><i></i> 2 agents working</span><span>22 tasks today · 94% completed</span></div>
+        <div class="card-grid"><article class="agent-card" data-agent="Researcher" data-description="Finds reliable sources and connects ideas across your workspace." data-sources="Notion, Drive, Web research" data-last="Market landscape brief"><span class="big-avatar">R</span><i>WORKING</i><h2>Researcher</h2><p>Finds reliable sources and connects ideas across your workspace.</p><small class="agent-current">Currently: Comparing six market sources</small><div><span>12 tasks today</span><button class="open-agent">Open ↗</button></div></article><article class="agent-card" data-agent="Writer" data-description="Turns notes, research, and context into clear first drafts." data-sources="Notion, Obsidian" data-last="Launch announcement draft"><span class="big-avatar">W</span><i>WORKING</i><h2>Writer</h2><p>Turns notes, research, and context into clear first drafts.</p><small class="agent-current">Currently: Drafting launch narrative</small><div><span>7 tasks today</span><button class="open-agent">Open ↗</button></div></article><article class="agent-card" data-agent="Strategist" data-description="Finds patterns and creates structured plans from scattered ideas." data-sources="All knowledge" data-last="Q3 priorities"><span class="big-avatar">S</span><i>READY</i><h2>Strategist</h2><p>Finds patterns and creates structured plans from scattered ideas.</p><small class="agent-current">Ready for a new task</small><div><span>3 tasks today</span><button class="open-agent">Open ↗</button></div></article></div>
+      </section>
+
+      <section class="view" data-view="connections">
+        <header><div><span class="kicker">CONNECTIONS</span><h1>Your extended<br/><em>network.</em></h1><p>Control what is connected, what it can access, and whether it is healthy.</p></div></header>
+        <article class="connect-hero"><span>NODE DIRECTORY</span><h2>Attach a node</h2><p>Personal nodes connect over WebSocket. Service nodes expose only the ports you approve.</p><div class="connect-input">⌕ <input id="connectionSearch" placeholder="Try service-NOTION-108"/><button id="connectionSearchButton">Search</button></div><div id="connectionMatches"></div></article>
+        <div class="connection-list"><div class="section-title"><div><h2>Attached nodes</h2><p>Review access and sync health for every connection.</p></div><span id="attachedCount">1 node</span></div><div id="attachedConnectionList"><article class="connection-root"><span class="big-avatar">P</span><div><b>Anish’s Brain</b><small>Root personal node · Private workspace</small></div><span class="sync-detail"><b>Online</b><small>12ms response</small></span><span class="permission">Owner</span></article></div></div>
+      </section>
+    </main>
+    <div class="toast" id="toast"><b>Connected</b><span>Server added to your network.</span></div>
+    <aside class="node-inspector" id="nodeInspector" aria-hidden="true">
+      <div class="inspector-head"><span>NODE INSPECTOR</span><button id="closeInspector" aria-label="Close inspector">×</button></div>
+      <div class="inspector-identity"><i id="inspectorMark">P</i><div><span id="inspectorType">PERSONAL NODE</span><h2 id="inspectorName">Anish’s Brain</h2><code id="inspectorId">personal-ANISH-001</code></div></div>
+      <div class="inspector-health"><i></i><span><b>Online</b><small>Responding normally</small></span><em>12ms</em></div>
+      <section><h3>General</h3><dl><div><dt>Running on</dt><dd id="inspectorRuntime">Local · macOS</dd></div><div><dt>Location</dt><dd id="inspectorLocation">San Francisco, US</dd></div><div><dt>Uptime</dt><dd id="inspectorUptime">6d 14h</dd></div><div><dt>Version</dt><dd>v0.8.4</dd></div></dl></section>
+      <section><h3>Available ports</h3><div class="inspector-ports" id="inspectorPorts"></div></section>
+      <section><h3>Active connections <span id="connectionCount">0</span></h3><div class="inspector-connections" id="inspectorConnections"></div></section>
+    </aside>
+    <aside class="utility-drawer" id="documentDrawer" aria-hidden="true">
+      <div class="drawer-head"><span>DOCUMENT</span><button data-close-drawer="documentDrawer" aria-label="Close document">×</button></div>
+      <div class="drawer-body"><span class="source-pill" id="documentSource">NOTION</span><h2 id="documentTitle"></h2><p class="drawer-summary" id="documentSummary"></p><div class="tag-list" id="documentTags"></div><dl class="detail-list"><div><dt>Updated</dt><dd id="documentUpdated"></dd></div><div><dt>Length</dt><dd id="documentWords"></dd></div><div><dt>Sync status</dt><dd id="documentStatus"></dd></div></dl><button class="drawer-primary" id="askDocumentButton">Ask about this document ↗</button><button class="drawer-secondary" id="openSourceButton">Open in source</button></div>
+    </aside>
+    <aside class="utility-drawer" id="agentDrawer" aria-hidden="true">
+      <div class="drawer-head"><span>AGENT WORKSPACE</span><button data-close-drawer="agentDrawer" aria-label="Close agent">×</button></div>
+      <div class="drawer-body"><span class="big-avatar" id="agentAvatar">R</span><h2 id="agentName"></h2><p class="drawer-summary" id="agentDescription"></p><dl class="detail-list"><div><dt>Knowledge access</dt><dd id="agentSources"></dd></div><div><dt>Last output</dt><dd id="agentLast"></dd></div></dl><label class="task-field">Give this agent a task<textarea id="agentTask" rows="4" placeholder="Describe the outcome you want…"></textarea></label><button class="drawer-primary" id="runAgentButton">Run task ↗</button><div class="recent-run" id="agentRunResult" hidden><span>JUST NOW</span><b>Task started</b><p>Your agent is gathering context from its approved sources.</p></div></div>
+    </aside>
+    <div class="modal-backdrop" id="sourceModal" hidden>
+      <section class="source-modal" role="dialog" aria-modal="true" aria-labelledby="sourceModalTitle"><div class="drawer-head"><span>NEW CONNECTION</span><button id="closeSourceModal" aria-label="Close source dialog">×</button></div><div class="drawer-body"><h2 id="sourceModalTitle">Connect a knowledge source</h2><p class="drawer-summary">Choose what to bring into your workspace. This prototype keeps the connection local.</p><div class="source-options"><button data-source-option="Notion"><b>N</b><span><strong>Notion</strong><small>Pages and databases</small></span><i>Connect</i></button><button data-source-option="Obsidian"><b>O</b><span><strong>Obsidian</strong><small>Local notes and files</small></span><i>Connect</i></button><button data-source-option="Drive"><b>D</b><span><strong>Google Drive</strong><small>Documents and folders</small></span><i>Connect</i></button></div></div></section>
+    </div>
+    <script>
+      const directory = [
+        { id:'personal-MAYA-7A2F', name:'Maya’s Brain', note:'Personal knowledge node', initial:'M', type:'personal' },
+        { id:'personal-ATLAS-38BD', name:'Atlas Workspace', note:'Personal research node', initial:'A', type:'personal' },
+        { id:'service-NOTION-108', name:'Notion Service', note:'Pages and databases', initial:'N', type:'service', ports:['HTTP','MCP'] },
+        { id:'service-OBSIDIAN-91N', name:'Obsidian Service', note:'Local notes and files', initial:'O', type:'service', ports:['MCP','FILES'] },
+        { id:'service-RESEARCH-24', name:'Research Service', note:'Search and retrieval', initial:'R', type:'service', ports:['HTTP','API'] }
+      ];
+      const apps = [
+        {id:'app-NOTION',name:'Notion',note:'Pages and databases',initial:'N',type:'service',ports:['MCP'],icon:'https://cdn.simpleicons.org/notion/000000'},
+        {id:'app-OBSIDIAN',name:'Obsidian',note:'Local knowledge vault',initial:'O',type:'service',ports:['FILES'],icon:'https://cdn.simpleicons.org/obsidian/7C3AED'},
+        {id:'app-GDRIVE',name:'Google Drive',note:'Documents and files',initial:'G',type:'service',ports:['API'],icon:'https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png'},
+        {id:'app-DROPBOX',name:'Dropbox',note:'Cloud files',initial:'D',type:'service',ports:['API'],icon:'https://cdn.simpleicons.org/dropbox/0061FF'},
+        {id:'app-SLACK',name:'Slack',note:'Messages and channels',initial:'S',type:'service',ports:['API'],icon:'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/slack/slack-original.svg'},
+        {id:'app-GITHUB',name:'GitHub',note:'Code and projects',initial:'G',type:'service',ports:['API'],icon:'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg'}
+      ];
+      const connected = new Set();
+      const toast = document.querySelector('#toast');
+      function showToast(title, text){ toast.querySelector('b').textContent=title; toast.querySelector('span').textContent=text; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2600); }
+      const validViews=new Set(['live','knowledge','agents','connections']);
+      function showView(name){const safeName=validViews.has(name)?name:'live';document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===safeName));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.viewLink===safeName));document.querySelectorAll('.utility-drawer.open').forEach(drawer=>closeDrawer(drawer));window.scrollTo(0,0);if(name!==safeName)history.replaceState(null,'','#live');}
+      document.querySelectorAll('[data-view-link]').forEach(link=>link.addEventListener('click',()=>showView(link.dataset.viewLink)));
+      window.addEventListener('hashchange',()=>showView(location.hash.slice(1)||'live'));
+      showView(location.hash.slice(1)||'live');
+      const renderResults=(query,target,compact=false)=>{ const q=query.trim().toLowerCase(); const matches=directory.filter(x=>!q||`${x.id} ${x.name} ${x.type}`.toLowerCase().includes(q)); target.innerHTML=matches.length?matches.map(x=>`<button class="result ${connected.has(x.id)?'added':''}" data-id="${x.id}"><span class="result-symbol ${x.type}">${x.type==='personal'?'P':'S'}</span><div><b>${x.name}</b><small>${x.id}</small><em>${x.type} node · ${x.note}</em></div><i>${connected.has(x.id)?'Attached':'+ Attach'}</i></button>`).join(''):`<p class="empty">No node found. Check the unique ID and try again.</p>`; if(compact)target.classList.add('open'); };
+      const positions=[[22,20],[78,20],[20,70],[80,70],[50,14],[50,82],[9,46],[91,46]];
+      const network=document.querySelector('#network'), svg=document.querySelector('#connectionSvg');
+      const nodeCenter=node=>{const canvas=network.getBoundingClientRect(),box=node.getBoundingClientRect();return{x:(box.left-canvas.left+box.width/2)/canvas.width*1000,y:(box.top-canvas.top+box.height/2)/canvas.height*440}};
+      const portCenter=(node,port)=>{const handle=node.querySelector(`[data-port="${port}"]`);return handle?nodeCenter(handle):nodeCenter(node)};
+      const curve=(a,b)=>`M${a.x} ${a.y} C${(a.x+b.x)/2} ${a.y}, ${(a.x+b.x)/2} ${b.y}, ${b.x} ${b.y}`;
+      function updateLines(){svg.querySelectorAll('path[data-from]').forEach(path=>{const from=document.querySelector(`[data-node-id="${path.dataset.from}"]`),to=document.querySelector(`[data-node-id="${path.dataset.to}"]`);if(from&&to)path.setAttribute('d',curve(portCenter(from,path.dataset.fromPort),portCenter(to,path.dataset.toPort)))});svg.querySelectorAll('text[data-for]').forEach(label=>{const path=svg.querySelector(`path[data-key="${label.dataset.for}"]`);if(path){const p=path.getPointAtLength(path.getTotalLength()/2);label.setAttribute('x',p.x);label.setAttribute('y',p.y-8)}})}
+      let selectedLine=null;const removeButton=document.querySelector('#removeConnection'),quickRemove=document.querySelector('#lineQuickRemove');
+      function positionQuickRemove(){if(!selectedLine)return;const point=selectedLine.getPointAtLength(selectedLine.getTotalLength()/2);quickRemove.style.left=`${point.x/1000*network.clientWidth}px`;quickRemove.style.top=`${point.y/440*network.clientHeight}px`;}
+      function selectLine(path){svg.querySelectorAll('.user-line').forEach(line=>line.classList.remove('selected'));selectedLine=path;if(path){path.classList.add('selected');removeButton.disabled=false;quickRemove.classList.add('show');positionQuickRemove()}else{removeButton.disabled=true;quickRemove.classList.remove('show')}}
+      function removeLine(){if(!selectedLine)return;const key=selectedLine.dataset.key;svg.querySelector(`text[data-for="${key}"]`)?.remove();selectedLine.remove();selectedLine=null;removeButton.disabled=true;quickRemove.classList.remove('show');showToast('Connection removed','The two ports are no longer connected.');const openNode=document.querySelector('.canvas-node.inspected');if(openNode)openInspector(openNode);}
+      removeButton.addEventListener('click',removeLine);quickRemove.addEventListener('click',event=>{event.stopPropagation();removeLine()});document.addEventListener('keydown',event=>{if((event.key==='Backspace'||event.key==='Delete')&&selectedLine)removeLine()});
+      function makeLine(fromId,toId,fromPort='service',toPort='service'){if(fromId===toId)return;const type=fromPort==='websocket'&&toPort==='websocket'?'websocket':'service';if((fromPort==='websocket')!==(toPort==='websocket'))return showToast('Ports do not match','WebSocket ports connect to WebSocket ports; Service ports connect to Service ports.');const key=[`${fromId}:${fromPort}`,`${toId}:${toPort}`].sort().join('|');if(svg.querySelector(`[data-key="${key}"]`))return showToast('Already connected','Those two ports already share a line.');const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.dataset.from=fromId;path.dataset.to=toId;path.dataset.fromPort=fromPort;path.dataset.toPort=toPort;path.dataset.key=key;path.setAttribute('class',`${type}-link user-line`);path.addEventListener('pointerdown',event=>event.stopPropagation());path.addEventListener('click',event=>{event.stopPropagation();selectLine(path)});svg.append(path);const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.dataset.for=key;label.textContent=type==='websocket'?'WEBSOCKET':'SERVICE';svg.append(label);updateLines();}
+      function enableNode(node){let drag=null;node.addEventListener('pointerdown',event=>{if(event.target.closest('.connector'))return;event.preventDefault();node.setPointerCapture(event.pointerId);const rect=network.getBoundingClientRect();drag={dx:event.clientX-node.getBoundingClientRect().left-node.offsetWidth/2,dy:event.clientY-node.getBoundingClientRect().top-node.offsetHeight/2,rect};node.classList.add('dragging')});node.addEventListener('pointermove',event=>{if(!drag)return;const x=Math.max(5,Math.min(95,(event.clientX-drag.rect.left-drag.dx)/drag.rect.width*100));const y=Math.max(8,Math.min(92,(event.clientY-drag.rect.top-drag.dy)/drag.rect.height*100));node.style.left=`${x}%`;node.style.top=`${y}%`;updateLines()});node.addEventListener('pointerup',()=>{drag=null;node.classList.remove('dragging')});node.querySelectorAll('.connector').forEach(handle=>handle.addEventListener('pointerdown',event=>{event.stopPropagation();event.preventDefault();handle.setPointerCapture(event.pointerId);const start=nodeCenter(node),preview=document.createElementNS('http://www.w3.org/2000/svg','path');preview.classList.add('preview-line');svg.append(preview);const move=e=>{const rect=network.getBoundingClientRect(),end={x:(e.clientX-rect.left)/rect.width*1000,y:(e.clientY-rect.top)/rect.height*440};preview.setAttribute('d',curve(start,end))};const up=e=>{preview.remove();handle.removeEventListener('pointermove',move);const targetPort=document.elementFromPoint(e.clientX,e.clientY)?.closest('.connector'),target=targetPort?.closest('.canvas-node');if(target&&target!==node){makeLine(node.dataset.nodeId,target.dataset.nodeId,handle.dataset.port,targetPort.dataset.port);showToast('Connection created',handle.dataset.port==='websocket'?'A WebSocket now joins these personal nodes.':'The service ports are now connected.')}};handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',up,{once:true})}))}
+      function connect(id){const server=directory.find(x=>x.id===id);if(!server||connected.has(id))return showToast('Already attached',`${server?.name||'This node'} is already in your network.`);const index=connected.size;connected.add(id);const [x,y]=positions[index%positions.length];const node=document.createElement('button');node.className=`attached-node canvas-node ${server.type} new`;node.dataset.nodeId=server.id;node.dataset.nodeType=server.type;node.style.cssText=`left:${x}%;top:${y}%`;const ports=server.type==='personal'?'<span class="node-ports"><span class="port websocket-port connector" data-port="websocket">WS</span><span class="port service-port connector" data-port="service">SVC</span></span>':'<span class="node-ports single"><span class="port service-port connector" data-port="service">SVC</span></span>';node.innerHTML=`<span class="node-type">${server.type.toUpperCase()} NODE</span><i class="attached-mark">${server.type==='personal'?'P':'S'}</i><b>${server.name}</b><small>${server.id}</small>${server.type==='service'?`<div class="service-ports">${server.ports.map(port=>`<span>${port}</span>`).join('')}</div>`:'<em>WebSocket + Service ready</em>'}${ports}`;document.querySelector('#attachedNodes').append(node);enableNode(node);makeLine('personal-ANISH-001',server.id,server.type==='personal'?'websocket':'service',server.type==='personal'?'websocket':'service');document.querySelector('#emptyGraph').classList.add('hidden');document.querySelector('#activityList').insertAdjacentHTML('afterbegin',`<div class="activity-row"><span>↗</span><p><b>${server.name}</b> attached as a ${server.type} node<small>Just now · Drag it anywhere on the canvas</small></p></div>`);renderConnectionList();showToast(`${server.type==='personal'?'Personal':'Service'} node attached`,'Use the labeled ports to create or remove connections.');}
+      enableNode(document.querySelector('#brain'));
+      setupInspector(document.querySelector('#brain'));
+      new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.classList?.contains('canvas-node'))setupInspector(node)}))).observe(document.querySelector('#attachedNodes'),{childList:true});
+      document.querySelector('#fitCanvas').addEventListener('click',()=>{const root=document.querySelector('#brain');root.style.left='50%';root.style.top='52%';document.querySelectorAll('.attached-node').forEach((node,i)=>{const [x,y]=positions[i%positions.length];node.style.left=`${x}%`;node.style.top=`${y}%`});updateLines();showToast('Canvas fitted','All nodes are back in view.')});
+      let pan=null;network.addEventListener('pointerdown',event=>{if(event.target.closest('.canvas-node,.graph-key,.empty-graph'))return;const rect=network.getBoundingClientRect();pan={x:event.clientX,y:event.clientY,rect,nodes:[...document.querySelectorAll('.canvas-node')].map(node=>({node,left:parseFloat(getComputedStyle(node).left),top:parseFloat(getComputedStyle(node).top)}))};network.setPointerCapture(event.pointerId);network.classList.add('panning')});network.addEventListener('pointermove',event=>{if(!pan)return;const dx=(event.clientX-pan.x)/pan.rect.width*100,dy=(event.clientY-pan.y)/pan.rect.height*100;pan.nodes.forEach(item=>{item.node.style.left=`${Math.max(3,Math.min(97,item.left/pan.rect.width*100+dx))}%`;item.node.style.top=`${Math.max(5,Math.min(95,item.top/pan.rect.height*100+dy))}%`});updateLines()});network.addEventListener('pointerup',()=>{pan=null;network.classList.remove('panning')});
+      const inspector=document.querySelector('#nodeInspector');
+      function setupInspector(node){node.addEventListener('click',event=>{if(event.target.closest('.connector'))return;openInspector(node)})}
+      function openInspector(node){document.querySelectorAll('.canvas-node').forEach(item=>item.classList.remove('inspected'));node.classList.add('inspected');const id=node.dataset.nodeId,type=node.dataset.nodeType,server=directory.find(item=>item.id===id);document.querySelector('#inspectorMark').textContent=type==='personal'?'P':'S';document.querySelector('#inspectorMark').className=type;document.querySelector('#inspectorType').textContent=`${type.toUpperCase()} NODE`;document.querySelector('#inspectorName').textContent=server?.name||'Anish’s Brain';document.querySelector('#inspectorId').textContent=id;document.querySelector('#inspectorRuntime').textContent=type==='personal'?(id==='personal-ANISH-001'?'Local · macOS':'Private VM · Linux'):'Cloud container · Linux';document.querySelector('#inspectorLocation').textContent=id==='personal-ANISH-001'?'San Francisco, US':type==='personal'?'Peer reported · US West':'us-west-2 · Oregon';document.querySelector('#inspectorUptime').textContent=type==='personal'?'6d 14h':'18d 3h';document.querySelector('#inspectorPorts').innerHTML=type==='personal'?'<span><i>WS</i><b>WebSocket</b><small>Peer-to-peer · Ready</small></span><span><i>SVC</i><b>Service</b><small>MCP / HTTP · Ready</small></span>':'<span><i>SVC</i><b>Service</b><small>HTTP / MCP · Ready</small></span>';const lines=[...svg.querySelectorAll('path[data-from]')].filter(line=>line.dataset.from===id||line.dataset.to===id);document.querySelector('#connectionCount').textContent=lines.length;document.querySelector('#inspectorConnections').innerHTML=lines.length?lines.map(line=>{const other=line.dataset.from===id?line.dataset.to:line.dataset.from,port=line.dataset.from===id?line.dataset.fromPort:line.dataset.toPort,name=directory.find(item=>item.id===other)?.name||(other==='personal-ANISH-001'?'Anish’s Brain':other);return `<div><i>${port==='websocket'?'WS':'SVC'}</i><span><b>${name}</b><small>${port==='websocket'?'WebSocket':'Service port'}</small></span><button data-remove-key="${line.dataset.key}" title="Disconnect">×</button></div>`}).join(''):'<p>No active connections.</p>';inspector.classList.add('open');inspector.setAttribute('aria-hidden','false')}
+      document.querySelector('#closeInspector').addEventListener('click',()=>{inspector.classList.remove('open');inspector.setAttribute('aria-hidden','true');document.querySelectorAll('.canvas-node').forEach(item=>item.classList.remove('inspected'))});document.querySelector('#inspectorConnections').addEventListener('click',event=>{const button=event.target.closest('[data-remove-key]');if(button){selectLine(svg.querySelector(`[data-key="${button.dataset.removeKey}"]`));removeLine()}});
+      const appPicker=document.querySelector('#appPicker'),appGrid=document.querySelector('#appGrid');
+      appPicker.addEventListener('pointerdown',event=>event.stopPropagation());
+      function renderApps(){appGrid.innerHTML=apps.map(app=>`<button class="app-option ${connected.has(app.id)?'connected':''}" data-app-id="${app.id}"><i>${connected.has(app.id)?'CONNECTED':'＋'}</i><img src="${app.icon}" alt=""/><b>${app.name}</b></button>`).join('')}
+      function connectApp(id){const app=apps.find(item=>item.id===id);if(!app||connected.has(id))return showToast('Already connected',`${app?.name||'This app'} is already attached.`);connected.add(id);const icon=document.createElement('button');icon.className='personal-app-icon';icon.dataset.appId=id;icon.title=app.name;icon.innerHTML=`<img src="${app.icon}" alt="${app.name} icon"/><span>${app.name}</span>`;icon.addEventListener('pointerdown',event=>event.stopPropagation());icon.addEventListener('click',event=>{event.stopPropagation();showToast(app.name,`${app.note} · Connected to your personal node.`)});document.querySelector('#personalApps').append(icon);document.querySelector('#emptyGraph').classList.add('hidden');appPicker.classList.remove('open');renderApps();renderConnectionList();showToast(`${app.name} connected`,'Added to the app field on your Personal Node.');}
+      document.querySelector('.personal-app-field').addEventListener('pointerdown',event=>event.stopPropagation());document.querySelector('#connectApps').addEventListener('pointerdown',event=>event.stopPropagation());document.querySelector('#connectApps').addEventListener('click',event=>{event.stopPropagation();renderApps();appPicker.classList.toggle('open')});document.querySelector('#closeAppPicker').addEventListener('click',()=>appPicker.classList.remove('open'));appGrid.addEventListener('click',event=>{const option=event.target.closest('[data-app-id]');if(option)connectApp(option.dataset.appId)});
+      const liveSearch=document.querySelector('#serverSearch'), liveResults=document.querySelector('#searchResults');
+      liveSearch.addEventListener('focus',()=>renderResults(liveSearch.value,liveResults,true)); liveSearch.addEventListener('input',()=>renderResults(liveSearch.value,liveResults,true));
+      liveResults.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){connect(b.dataset.id);liveResults.classList.remove('open');liveSearch.value='';}});
+      document.addEventListener('click',e=>{if(!e.target.closest('.server-search'))liveResults.classList.remove('open')});
+      const connectionInput=document.querySelector('#connectionSearch'), matches=document.querySelector('#connectionMatches'); document.querySelector('#connectionSearchButton').addEventListener('click',()=>renderResults(connectionInput.value,matches)); connectionInput.addEventListener('keydown',e=>{if(e.key==='Enter')renderResults(connectionInput.value,matches)}); matches.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){connect(b.dataset.id);renderResults(connectionInput.value,matches)}});
+      document.querySelector('#askButton').addEventListener('click',()=>document.querySelector('#askCard').scrollIntoView({behavior:'smooth'})); document.querySelector('#askForm').addEventListener('submit',e=>{e.preventDefault();const input=document.querySelector('#askInput');if(input.value.trim()){showToast('Your brain is working',input.value);input.value=''}});
+
+      // Knowledge workspace
+      const knowledgeSearch=document.querySelector('#knowledgeSearch'),knowledgeRows=[...document.querySelectorAll('#knowledgeTable .table-row')];let activeSource='all',activeDocument=null;
+      function filterKnowledge(){const query=knowledgeSearch.value.trim().toLowerCase();let visible=0;knowledgeRows.forEach(row=>{const matchesText=!query||row.dataset.search.includes(query),matchesSource=activeSource==='all'||row.dataset.source===activeSource,show=matchesText&&matchesSource;row.hidden=!show;if(show)visible++});document.querySelector('#knowledgeResultCount').textContent=`${visible} document${visible===1?'':'s'}`;document.querySelector('#knowledgeEmpty').classList.toggle('show',visible===0);document.querySelector('#askResultsButton').disabled=visible===0;}
+      knowledgeSearch.addEventListener('input',filterKnowledge);
+      document.querySelector('#sourceFilters').addEventListener('click',event=>{const button=event.target.closest('[data-source]');if(!button)return;activeSource=button.dataset.source;document.querySelectorAll('#sourceFilters button').forEach(item=>item.classList.toggle('selected',item===button));filterKnowledge()});
+      function closeDrawer(drawer){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');}
+      function openDrawer(drawer){document.querySelectorAll('.utility-drawer.open').forEach(closeDrawer);drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');drawer.querySelector('button')?.focus();}
+      knowledgeRows.forEach(row=>row.addEventListener('click',()=>{const doc=JSON.parse(row.dataset.document);activeDocument=doc;document.querySelector('#documentSource').textContent=doc.type.toUpperCase();document.querySelector('#documentTitle').textContent=doc.title;document.querySelector('#documentSummary').textContent=doc.summary;document.querySelector('#documentTags').innerHTML=doc.tags.map(tag=>`<span>${tag}</span>`).join('');document.querySelector('#documentUpdated').textContent=doc.updated;document.querySelector('#documentWords').textContent=doc.words;document.querySelector('#documentStatus').textContent=doc.status;openDrawer(document.querySelector('#documentDrawer'))}));
+      document.querySelectorAll('[data-close-drawer]').forEach(button=>button.addEventListener('click',()=>closeDrawer(document.querySelector(`#${button.dataset.closeDrawer}`))));
+      document.querySelector('#askDocumentButton').addEventListener('click',()=>{if(!activeDocument)return;location.hash='live';document.querySelector('#askInput').value=`What are the key takeaways from “${activeDocument.title}”?`;setTimeout(()=>document.querySelector('#askCard').scrollIntoView({behavior:'smooth'}),50)});
+      document.querySelector('#openSourceButton').addEventListener('click',()=>showToast('Source preview',`${activeDocument?.title||'This document'} would open in its connected source.`));
+      document.querySelector('#askResultsButton').addEventListener('click',()=>{const visibleTitles=knowledgeRows.filter(row=>!row.hidden).map(row=>JSON.parse(row.dataset.document).title);location.hash='live';document.querySelector('#askInput').value=`Compare the key themes across: ${visibleTitles.join(', ')}`;setTimeout(()=>document.querySelector('#askCard').scrollIntoView({behavior:'smooth'}),50)});
+
+      // Source connection dialog
+      const sourceModal=document.querySelector('#sourceModal');
+      function setSourceModal(open){sourceModal.hidden=!open;document.body.classList.toggle('modal-open',open);if(open)document.querySelector('#closeSourceModal').focus();}
+      document.querySelector('#addSourceButton').addEventListener('click',()=>setSourceModal(true));document.querySelector('#closeSourceModal').addEventListener('click',()=>setSourceModal(false));sourceModal.addEventListener('click',event=>{if(event.target===sourceModal)setSourceModal(false)});
+      document.querySelector('.source-options').addEventListener('click',event=>{const button=event.target.closest('[data-source-option]');if(!button)return;button.classList.add('connected');button.querySelector('i').textContent='Connected';const source=button.dataset.sourceOption,appId=source==='Drive'?'app-GDRIVE':`app-${source.toUpperCase()}`;if(!connected.has(appId))connectApp(appId);setSourceModal(false);showToast(`${source} connected`,'Your knowledge index is ready to sync.')});
+
+      // Agent workspaces
+      let activeAgentCard=null;const agentDrawer=document.querySelector('#agentDrawer');
+      function openAgent(card){activeAgentCard=card;const name=card.dataset.agent;document.querySelector('#agentAvatar').textContent=name[0];document.querySelector('#agentName').textContent=name;document.querySelector('#agentDescription').textContent=card.dataset.description;document.querySelector('#agentSources').textContent=card.dataset.sources;document.querySelector('#agentLast').textContent=card.dataset.last;document.querySelector('#agentTask').value='';document.querySelector('#agentRunResult').hidden=true;openDrawer(agentDrawer);setTimeout(()=>document.querySelector('#agentTask').focus(),150)}
+      document.querySelectorAll('.agent-card').forEach(card=>card.querySelector('.open-agent').addEventListener('click',()=>openAgent(card)));
+      document.querySelector('#createAgentButton').addEventListener('click',()=>{const strategist=document.querySelector('[data-agent="Strategist"]');openAgent(strategist);document.querySelector('#agentName').textContent='New agent';document.querySelector('#agentDescription').textContent='Start with a task, then refine its role and knowledge access.';document.querySelector('#agentTask').placeholder='What should this agent be responsible for?'});
+      document.querySelector('#runAgentButton').addEventListener('click',()=>{const task=document.querySelector('#agentTask').value.trim();if(!task)return showToast('Add a task','Describe the outcome you want this agent to produce.');document.querySelector('#agentRunResult').hidden=false;if(activeAgentCard){activeAgentCard.querySelector('.agent-current').textContent=`Currently: ${task.length>42?`${task.slice(0,42)}…`:task}`;activeAgentCard.querySelector(':scope > i').textContent='WORKING';}document.querySelector('#activityList').insertAdjacentHTML('afterbegin',`<div class="activity-row"><span>↗</span><p><b>${document.querySelector('#agentName').textContent}</b> started a new task<small>Just now</small></p></div>`);showToast('Task started','The agent is gathering context from approved sources.')});
+
+      // Connection management
+      function renderConnectionList(){const target=document.querySelector('#attachedConnectionList');const items=[...connected].map(id=>directory.find(item=>item.id===id)||apps.find(item=>item.id===id)).filter(Boolean);target.querySelectorAll('.managed-connection').forEach(item=>item.remove());items.forEach(item=>target.insertAdjacentHTML('beforeend',`<article class="managed-connection"><span class="big-avatar">${item.initial}</span><div><b>${item.name}</b><small>${item.note} · Synced just now</small></div><span class="sync-detail"><b>Healthy</b><small>${item.type==='personal'?'Peer connection':'Read access'}</small></span><span class="permission">${item.type==='personal'?'Shared':'Approved'}</span><button class="disconnect-node" data-disconnect-id="${item.id}" aria-label="Disconnect ${item.name}">Disconnect</button></article>`));document.querySelector('#attachedCount').textContent=`${items.length+1} node${items.length===0?'':'s'}`;}
+      function detachConnection(id){const item=directory.find(entry=>entry.id===id)||apps.find(entry=>entry.id===id);connected.delete(id);document.querySelector(`[data-node-id="${id}"]`)?.remove();document.querySelector(`[data-app-id="${id}"]`)?.remove();svg.querySelectorAll(`path[data-from="${id}"],path[data-to="${id}"]`).forEach(path=>{svg.querySelector(`text[data-for="${path.dataset.key}"]`)?.remove();path.remove()});renderConnectionList();renderApps();if(!connected.size)document.querySelector('#emptyGraph').classList.remove('hidden');showToast('Connection removed',`${item?.name||'The node'} no longer has workspace access.`)}
+      document.querySelector('#attachedConnectionList').addEventListener('click',event=>{const button=event.target.closest('[data-disconnect-id]');if(button)detachConnection(button.dataset.disconnectId)});
+
+      // Previously decorative controls now provide useful feedback/actions.
+      document.querySelectorAll('.chips button').forEach(button=>button.addEventListener('click',()=>{document.querySelector('#askInput').value=button.textContent;document.querySelector('#askInput').focus()}));
+      document.querySelector('.help').addEventListener('click',()=>showToast('Quick help','Connect a source, search Knowledge, then give an agent a focused task.'));
+      document.querySelector('.account').addEventListener('click',()=>showToast('Anish’s space','Personal workspace · Local-first prototype'));
+      document.querySelector('.section-title button')?.addEventListener('click',()=>showToast('Activity is up to date','New agent runs and connections appear here automatically.'));
+      document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.querySelectorAll('.utility-drawer.open').forEach(closeDrawer);if(!sourceModal.hidden)setSourceModal(false)}});
+      renderConnectionList();
+    </script>
+  </body>
+</html>

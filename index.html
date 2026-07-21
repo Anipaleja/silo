@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f2ea" />
+    <title>Loom — Your knowledge, alive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="server-search.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Loom home"><span class="brand-mark">L</span><span>Loom</span></a>
+      <nav>
+        <button class="nav-item active"><span class="nav-icon">⌁</span><span>Live map</span></button>
+        <button class="nav-item"><span class="nav-icon">◫</span><span>Knowledge</span><span class="nav-count">2.4k</span></button>
+        <button class="nav-item"><span class="nav-icon">◇</span><span>Agents</span><span class="nav-count">3</span></button>
+        <button class="nav-item"><span class="nav-icon">↗</span><span>Connections</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="usage-card">
+          <div class="usage-top"><span>Memory</span><span>72%</span></div>
+          <div class="usage-bar"><i></i></div>
+          <p>Your brain has room to grow.</p>
+        </div>
+        <button class="nav-item"><span class="nav-icon">?</span><span>Help</span></button>
+        <button class="profile"><span class="avatar">AP</span><span><b>Anish's space</b><small>Personal plan</small></span><span class="dots">•••</span></button>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow"><span class="live-dot"></span> LIVE WORKSPACE</div>
+          <h1>Your knowledge, <em>thinking.</em></h1>
+          <p class="subtitle">See how your notes and agents work together in real time.</p>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button" aria-label="Notifications">♧<i></i></button>
+          <button class="primary" id="newTask"><span>＋</span> Ask your brain</button>
+        </div>
+      </header>
+
+      <section class="status-strip">
+        <div><span class="pulse"></span><strong>Everything is connected</strong><small>Last checked just now</small></div>
+        <div class="stats"><span><b>3</b> active minds</span><span><b>4</b> sources</span><span><b>12</b> tasks today</span></div>
+      </section>
+
+      <section class="map-card">
+        <div class="map-toolbar">
+          <div class="segmented"><button class="selected">Live</button><button>Last hour</button><button>Today</button></div>
+          <div class="map-actions">
+            <div class="server-search">
+              <span>⌕</span>
+              <input id="serverSearch" type="search" placeholder="Find a server ID…" autocomplete="off" aria-label="Find a server by name or ID" />
+              <div class="search-results" id="searchResults"></div>
+            </div>
+            <button id="recenter">⌖ <span>Center</span></button><button id="pauseBtn">Ⅱ <span>Pause</span></button>
+          </div>
+        </div>
+
+        <div class="network" id="network">
+          <svg class="connections" id="connections" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="lineFade"><stop stop-color="#b9ad99"/><stop offset=".5" stop-color="#d8875e"/><stop offset="1" stop-color="#86a996"/></linearGradient></defs>
+            <path class="flow-line" d="M165 106 C300 106 300 208 465 208"/>
+            <path class="flow-line delay" d="M165 252 C310 252 330 234 465 220"/>
+            <path class="flow-line delay2" d="M165 398 C310 398 325 270 465 235"/>
+            <path class="flow-line green" d="M625 212 C755 212 770 125 907 125"/>
+            <path class="flow-line green delay" d="M625 228 C760 228 780 260 907 260"/>
+            <path class="flow-line green delay2" d="M625 238 C760 238 775 395 907 395"/>
+          </svg>
+          <div class="lane-label sources-label">YOUR SOURCES</div>
+          <div class="lane-label peers-label">PEER NETWORK</div>
+
+          <article class="node source notion" style="--x:6%;--y:10%"><div class="node-logo">N</div><div><b>Notion</b><span>1,248 pages</span></div><i class="ok"></i></article>
+          <article class="node source obsidian" style="--x:6%;--y:39%"><div class="node-logo">◈</div><div><b>Obsidian</b><span>892 notes</span></div><i class="ok"></i></article>
+          <article class="node source drive" style="--x:6%;--y:68%"><div class="node-logo">△</div><div><b>Google Drive</b><span>314 files</span></div><i class="ok"></i></article>
+
+          <article class="brain-node" id="brainNode">
+            <div class="orbit o1"></div><div class="orbit o2"></div>
+            <div class="brain-core"><span class="brain-glyph">L</span><i></i></div>
+            <div class="brain-copy"><span>YOUR BRAIN</span><b>Home Server</b><small><i></i> Thinking · 3 tasks</small></div>
+          </article>
+
+          <article class="node agent" style="--x:77%;--y:14%" data-agent="Researcher"><div class="agent-avatar coral">R</div><div><b>Researcher</b><span>Finding sources</span></div><div class="mini-wave"><i></i><i></i><i></i></div></article>
+          <article class="node agent" style="--x:77%;--y:43%" data-agent="Writer"><div class="agent-avatar violet">W</div><div><b>Writer</b><span>Drafting summary</span></div><div class="mini-wave"><i></i><i></i><i></i></div></article>
+          <article class="node agent" style="--x:77%;--y:72%" data-agent="Maya's Brain"><div class="agent-avatar green">M</div><div><b>Maya's Brain</b><span>Peer · available</span></div><i class="ok"></i></article>
+        </div>
+        <div class="legend"><span><i class="legend-dot thinking"></i>Thinking</span><span><i class="legend-dot connected"></i>Connected</span><span><i class="legend-line"></i>Information flowing</span></div>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="activity-panel">
+          <div class="panel-head"><div><h2>What’s happening</h2><p>A plain-English view of your workspace.</p></div><button>View all →</button></div>
+          <div class="timeline" id="timeline">
+            <div class="event fresh"><span class="event-icon search">⌕</span><div><p><b>Researcher</b> found 6 useful sources for “Q3 market overview”</p><small>Just now</small></div><button class="tag">View sources</button></div>
+            <div class="event"><span class="event-icon note">N</span><div><p><b>Notion</b> shared a new product brief with your brain</p><small>2 minutes ago</small></div><button class="tag">Product brief</button></div>
+            <div class="event"><span class="event-icon sparkle">✦</span><div><p><b>Writer</b> turned your meeting notes into a first draft</p><small>8 minutes ago</small></div><button class="tag">Open draft</button></div>
+          </div>
+        </article>
+
+        <article class="quick-panel">
+          <div class="quick-head"><span class="spark">✦</span><div><h2>Ask your brain</h2><p>It knows everything you’ve connected.</p></div></div>
+          <form id="askForm">
+            <textarea id="askInput" placeholder="What would you like to know?" rows="3"></textarea>
+            <div class="input-footer"><span>⌘ ↵ to send</span><button type="submit" aria-label="Send">↑</button></div>
+          </form>
+          <div class="suggestions"><button>Summarize my week</button><button>Find an old idea</button><button>Draft an update</button></div>
+        </article>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"><span>✦</span><div><b>Your brain is on it</b><small>Researcher is looking through your sources…</small></div></div>
+    <script src="app.js"></script>
+  </body>
+</html>
