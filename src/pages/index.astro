@@ -7,7 +7,6 @@ import '../styles/apps.css';
 import '../styles/floating-apps.css';
 import '../styles/workflows.css';
 import '../styles/app-field.css';
-import '../styles/personal-space.css';
 
 const sources = [
   { icon: 'N', name: 'Notion', meta: '1,248 pages' },
@@ -57,7 +56,7 @@ const knowledge = [
           <div class="network graph-network" id="network">
             <svg viewBox="0 0 1000 440" preserveAspectRatio="none" id="connectionSvg" aria-hidden="true"></svg>
             <div class="graph-key"><span><i class="personal-key"></i> Personal node</span><span><i class="service-key"></i> Service node</span><span><b></b> WebSocket</span></div>
-            <div class="personal-root canvas-node" id="brain" data-node-id="personal-ANISH-001" data-node-type="personal"><span class="personal-space-label">ANISH’S PERSONAL SPACE</span><span class="node-type">PERSONAL NODE</span><i class="personal-mark">P</i><b>Anish’s Brain</b><small>personal-ANISH-001</small><em><i></i> Online</em><div class="personal-app-field"><span>CONNECTED APPS</span><div id="personalApps"></div><button class="connect-apps-trigger" id="connectApps" aria-label="Connect apps"><i>＋</i><span>Connect apps</span></button></div><span class="node-ports"><span class="port websocket-port connector" data-port="websocket">WS</span><span class="port service-port connector" data-port="service">SVC</span></span></div>
+            <div class="personal-root canvas-node" id="brain" data-node-id="personal-ANISH-001" data-node-type="personal"><span class="node-type">PERSONAL NODE</span><i class="personal-mark">P</i><b>Anish’s Brain</b><small>personal-ANISH-001</small><em><i></i> Online</em><div class="personal-app-field"><span>CONNECTED APPS</span><div id="personalApps"></div><button class="connect-apps-trigger" id="connectApps" aria-label="Connect apps"><i>＋</i><span>Connect apps</span></button></div><span class="node-ports"><span class="port websocket-port connector" data-port="websocket">WS</span><span class="port service-port connector" data-port="service">SVC</span></span></div>
             <div id="attachedNodes"></div>
             <div class="empty-graph" id="emptyGraph"><span>＋</span><b>Attach your first node</b><small>Search a unique ID above to grow this network.</small></div>
             <button class="line-quick-remove" id="lineQuickRemove">× Disconnect</button>
